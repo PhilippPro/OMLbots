@@ -21,12 +21,23 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
     
     # FIXME: Check if there is any value in running this every time.
     #  If not, then run when creating registry.
-    sci.bench = rscimark::rscimark()
-    print(sci.bench)
+    # sci.bench = rscimark::rscimark()
+    #print(sci.bench)
     
     # Run mlr
     mlr.par.set = list(...)
     mlr.par.set = mlr.par.set[!vlapply(mlr.par.set, is.na)]
+    if (getLearnerPackages(lrn) == "ranger") {
+      p = ncol(data$input$data.set$data) - 1
+      mlr.par.set$mtry = ceiling(p * mlr.par.set$mtry)
+    }
+    if (getLearnerPackages(lrn) == "xgboost") {
+      data$input$data.set$data
+      target.column = which(colnames(data$input$data.set$data) == data$input$data.set$target.features)
+      data$input$data.set$data = data.frame(conv2num(data$input$data.set$data[, -target.column]), data$input$data.set$data[, target.column])
+      colnames(data$input$data.set$data)[ncol(data$input$data.set$data)] = data$input$data.set$target.features
+      mlr.par.set$nthread = 1
+    }
     mlr.lrn = setHyperPars(mlr.lrn, par.vals = mlr.par.set)
     res = runTaskMlr(data, mlr.lrn, scimark.vector = sci.bench)
     print(res)
@@ -34,10 +45,8 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
       tags = c("mlrRandomBot", extra.tag, add.tags)
       uploadOMLRun(res, confirm.upload = FALSE, tags = tags, verbosity = 1)
     }
-      
     return(TRUE)
   })
-  
   design = list(par)
   names(design) = lrn$short.name
   addExperiments(algo.designs = design, reg = reg)
@@ -46,4 +55,13 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
     exponentialBackOff(jobs = 1:nrow(par), registry = reg, start.resources = min.resources, max.resources = max.resources)
   else
     submitJobs()
+}
+
+# Conversion from factor to numeric for xgboost
+conv2num <- function(data) {
+  char_y <- names(Filter(function(x) x=="factor", sapply(data, class)))
+  for (y in char_y) {
+    data[,y] <- as.numeric(ordered(as.factor(data[,y])))
+  }
+  return(data)
 }

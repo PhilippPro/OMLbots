@@ -32,7 +32,7 @@ lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.xgboost", predict.typ
     makeNumericParam("eta", lower = -10, upper = 0, trafo = function(x) 2^x),
     makeNumericParam("subsample",lower = 0.1, upper = 1),
     makeDiscreteParam("booster", values = c("gbtree", "gblinear")),
-    makeNumericParam("max_depth", lower = 1, upper = 15, requires = quote(booster == "gbtree")),
+    makeIntegerParam("max_depth", lower = 1, upper = 15, requires = quote(booster == "gbtree")),
     makeNumericParam("min_child_weight", lower = 0, upper = 7, requires = quote(booster == "gbtree"), trafo = function(x) 2^x),
     makeNumericParam("colsample_bytree", lower = 0, upper = 1, requires = quote(booster == "gbtree")),
     makeNumericParam("colsample_bylevel", lower = 0, upper = 1, requires = quote(booster == "gbtree")),
@@ -45,5 +45,5 @@ lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.ranger", predict.type
     makeIntegerParam("num.trees", lower = 1, upper = 2000),
     makeLogicalParam("replace"),
     makeNumericParam("sample.fraction", lower = 0.1, upper = 1),
-    makeIntegerParam("mtry", lower = 1, upper = 5)),
+    makeNumericParam("mtry", lower = 0, upper = 1)),
   lrn.ps.sets = lrn.par.set)

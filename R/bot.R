@@ -21,6 +21,6 @@ runBot = function(batch.size, sample.learner.fun = sampleRandomLearner,
   par = sample.configuration.fun(batch.size, lrn$param.set)
   print("Selected configurations:")
   print(par)
-  evalConfigurations(lrn$learner, task = task, par, min.resources, max.resources, 
+  evalConfigurations(lrn = lrn$learner, task = task, par, min.resources, max.resources, 
     upload = upload, path = path, extra.tag = extra.tag)
 }
