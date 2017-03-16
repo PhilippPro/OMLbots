@@ -17,7 +17,7 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
   addProblem(name = task$name, data = task$task)
   
   addAlgorithm(lrn$short.name, fun = function(job, data, instance, mlr.lrn = lrn, 
-    should.upload = upload, add.tags = attr(par, "additional.tags"), ...) {
+    should.upload = upload, add.tags = attr(par, "additional.tags"), extra.tag = extra.tag, ...) {
     
     # FIXME: Check if there is any value in running this every time.
     #  If not, then run when creating registry.
@@ -32,14 +32,13 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
       mlr.par.set$mtry = ceiling(p * mlr.par.set$mtry)
     }
     if (getLearnerPackages(lrn) == "xgboost") {
-      data$input$data.set$data
       target.column = which(colnames(data$input$data.set$data) == data$input$data.set$target.features)
-      data$input$data.set$data = data.frame(conv2num(data$input$data.set$data[, -target.column]), data$input$data.set$data[, target.column])
+      data$input$data.set$data = data.frame(convToNum(data$input$data.set$data[, -target.column]), data$input$data.set$data[, target.column])
       colnames(data$input$data.set$data)[ncol(data$input$data.set$data)] = data$input$data.set$target.features
       mlr.par.set$nthread = 1
     }
     mlr.lrn = setHyperPars(mlr.lrn, par.vals = mlr.par.set)
-    res = runTaskMlr(data, mlr.lrn, scimark.vector = sci.bench)
+    res = runTaskMlr(data, mlr.lrn) #, scimark.vector = sci.bench)
     print(res)
     if (should.upload) {
       tags = c("mlrRandomBot", extra.tag, add.tags)
@@ -58,10 +57,10 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
 }
 
 # Conversion from factor to numeric for xgboost
-conv2num <- function(data) {
-  char_y <- names(Filter(function(x) x=="factor", sapply(data, class)))
-  for (y in char_y) {
-    data[,y] <- as.numeric(ordered(as.factor(data[,y])))
+convToNum = function(data) {
+  char_i = names(Filter(function(x) x=="factor", sapply(data, class)))
+  for (i in char_i) {
+    data[,i] = as.numeric(ordered(data[, i]))
   }
   return(data)
 }

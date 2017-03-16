@@ -2,7 +2,7 @@ library(devtools)
 load_all()
 
 sampleRandomLearner1 = function(lrn.ps.sets) {
-  sample(lrn.ps.sets[4], size = 1)[[1]]
+  sample(lrn.ps.sets[5], size = 1)[[1]]
 }
 
 unlink("test", recursive = TRUE)
@@ -14,7 +14,7 @@ runBot(batch.size = 10,
   path = "test"
 )
 
-# rpart ok, glmnet ok, svm ok, ranger: mtry Problematik -> gelöst, kknn -> wrong package name, xgboost: numeric Problematik -> gelöst
+# rpart ok, glmnet ok, svm ok, ranger: mtry Problematik -> gelöst, kknn ok, xgboost: numeric Problematik -> gelöst
 
 regis = loadRegistry("test")
 getStatus()
