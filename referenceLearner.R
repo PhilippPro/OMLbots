@@ -34,4 +34,3 @@ print(overview)
 
 tbl.results = getMlrRandomBotResults("reference")
 print(tbl.results)
-
