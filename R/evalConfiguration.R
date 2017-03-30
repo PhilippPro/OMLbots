@@ -30,6 +30,7 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
     if (getLearnerPackages(lrn) == "ranger") {
       p = ncol(data$input$data.set$data) - 1
       mlr.par.set$mtry = ceiling(p * mlr.par.set$mtry)
+      mlr.par.set$num.threads = 1
     }
     if (getLearnerPackages(lrn) == "xgboost") {
       target.column = which(colnames(data$input$data.set$data) == data$input$data.set$target.features)

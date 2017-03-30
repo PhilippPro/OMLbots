@@ -17,7 +17,7 @@ task.ids = unique(tbl.results$task.id)
 surr = makeSurrogateModel(measure.name = "area.under.roc.curve", learner.name = "mlr.classif.glmnet", 
   task.id = task.ids, tbl.results = tbl.results, tbl.hypPars = tbl.hypPars, param.set = lrn.par.set$classif.glmnet.set$param.set)
 
-rnd.points = generateRandomDesign(1000, lrn.par.set$classif.glmnet.set$param.set)
+rnd.points = generateRandomDesign(10000, lrn.par.set$classif.glmnet.set$param.set)
 preds = matrix(NA, nrow(rnd.points), length(surr))
 for(i in seq_along(surr)) {
   preds[, i] = predict(surr[[i]], newdata = rnd.points)$data$response
@@ -28,8 +28,11 @@ average_preds = apply(preds, 1, mean)
 average_preds[average_preds == max(average_preds)]
 rnd.points[average_preds == max(average_preds), ]
 
+# Tunability overall
 
+# Tunability hyperparameter specific
 
+# Interactions
 
 
 # Anhang
